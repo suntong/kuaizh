@@ -18,9 +18,9 @@ iconv 的 Go 封装，如：github.com/djimenez/iconv-go
 package main
 
 import (
-	"bufio"
+	// "bufio"
 	"fmt"
-	"os"
+	// "os"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -31,10 +31,10 @@ func main() {
 	doc, _ := goquery.NewDocument("http://www.iteye.com")
 	//fmt.Println(doc.Html())
 	//根据样式查询博文推荐栏目
-	mainRight := doc.Find(".main_right")
-	//fmt.Println(mainRight.Html())
+	mainRight := doc.Find("#index_main")
+	fmt.Println(mainRight.Html())
 	ul := mainRight.Find("ul")
-	//fmt.Println(ul.Html())
+	fmt.Println(ul.Html())
 
 	//解析每一条博文的标题和url链接
 	li := ul.Find("li")
@@ -45,12 +45,6 @@ func main() {
 		fmt.Println("text:", text)
 		fmt.Println("href:", href)
 	})
-
-	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		url := scanner.Text()
-		fmt.Println(url)
-	}
 
 }
 
