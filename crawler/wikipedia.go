@@ -15,7 +15,7 @@ type Stock struct {
 func main() {
 	stocks := make([]Stock, 0, 600)
 	doc, _ := goquery.NewDocument("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies")
-	doc.Find("table.wikitable tr").Each(func(i int, s *goquery.Selection) {
+	doc.Find("table.wikitable").First().Find("tr").Each(func(i int, s *goquery.Selection) {
 		cik, _ := strconv.ParseInt(s.Find("td").Last().Text(), 10, 64)
 		stocks = append(stocks, Stock{
 			Symbol: s.Find("td a").First().Text(),
