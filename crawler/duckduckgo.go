@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
 	"log"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 func scrape(url string) {
@@ -19,6 +20,12 @@ func scrape(url string) {
 		}
 		fmt.Println(link)
 	})
+}
+
+func concurrentQueries() {
+	go scrape("http://duckduckgo.com/?q=whitesmith")
+	go scrape("http://duckduckgo.com/?q=coimbra")
+	go scrape("http://duckduckgo.com/?q=adbjesus")
 }
 
 func main() {
