@@ -7,6 +7,16 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+/*
+
+https://blog.golang.org
+
+	<div class="article">
+		<h3 class="title"><a href="/go1.6">Go 1.6 is released</a></h3>
+		<p class="date">17 February 2016</p>
+
+*/
+
 func main() {
 	doc, err := goquery.NewDocument("https://blog.golang.org")
 	if err != nil {
@@ -19,3 +29,13 @@ func main() {
 		fmt.Printf("%d) %s - %s\n", i+1, title, link)
 	})
 }
+
+/*
+
+1) Go 1.6 is released - /go1.6
+2) Language and Locale Matching in Go - /matchlang
+3) Six years of Go - /6years
+4) GolangUK 2015 - /gouk15
+5) Go GC: Prioritizing low latency and simplicity - /go15gc
+
+*/
