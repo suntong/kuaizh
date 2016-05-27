@@ -7,13 +7,25 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+/*
+
+https://duckduckgo.com/html/?q=whitesmith
+
+ <h2 class="result__title">
+
+   <a rel="nofollow" class="result__a" href="https://en.wikipedia.org/wiki/Whitesmith">Tinsmith - Wikipedia, the free encyclopedia</a>
+
+ </h2>
+
+*/
+
 func scrape(url string) {
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	doc.Find("a.result__url").Each(func(i int, s *goquery.Selection) {
+	doc.Find("a.result__a").Each(func(i int, s *goquery.Selection) {
 		link, exists := s.Attr("href")
 		if !exists {
 			return
@@ -23,11 +35,11 @@ func scrape(url string) {
 }
 
 func concurrentQueries() {
-	go scrape("http://duckduckgo.com/?q=whitesmith")
-	go scrape("http://duckduckgo.com/?q=coimbra")
-	go scrape("http://duckduckgo.com/?q=adbjesus")
+	go scrape("http://duckduckgo.com/html/?q=whitesmith")
+	go scrape("http://duckduckgo.com/html/?q=coimbra")
+	go scrape("http://duckduckgo.com/html/?q=adbjesus")
 }
 
 func main() {
-	scrape("http://duckduckgo.com/?q=whitesmith")
+	scrape("http://duckduckgo.com/html/?q=whitesmith")
 }
