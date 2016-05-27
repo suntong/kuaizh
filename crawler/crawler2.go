@@ -25,16 +25,35 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+/*
+
+http://www.iteye.com
+
+              <div class="main_right">
+                <h3>
+                  <a href="/blogs" target="_blank">博文推荐</a>
+                  <a href="/blogs" class="more" target="_blank">[更多]</a>
+                </h3>
+                <ul>
+                                      <li class="title">
+                      <a href="http://ye-wolf.iteye.com/blog/2301112" target="_blank" title="青岛JAVA之旅">青岛JAVA之旅</a>
+                    </li>
+                                      <li class="title">
+                      <a href="http://jjhpeopl.iteye.com/blog/2301107" target="_blank" title="mac python2.7安装PIL.Image模块">mac python2.7安装PIL.Image模块</a>
+                    </li>
+
+*/
+
 func main() {
 
 	//获取html的document对象
 	doc, _ := goquery.NewDocument("http://www.iteye.com")
 	//fmt.Println(doc.Html())
 	//根据样式查询博文推荐栏目
-	mainRight := doc.Find("#index_main")
-	fmt.Println(mainRight.Html())
+	mainRight := doc.Find(".main_right")
+	//fmt.Println(mainRight.Html())
 	ul := mainRight.Find("ul")
-	fmt.Println(ul.Html())
+	//fmt.Println(ul.Html())
 
 	//解析每一条博文的标题和url链接
 	li := ul.Find("li")
@@ -44,6 +63,7 @@ func main() {
 		text := link.Text()
 		fmt.Println("text:", text)
 		fmt.Println("href:", href)
+		fmt.Println()
 	})
 
 }
@@ -51,38 +71,13 @@ func main() {
 /*
 
 输出内容：
-C:/Go/bin/go.exe build -i [C:/Users/Administrator/web_crawler/src/web_crawler]
-成功: 进程退出代码 0.
-C:/Users/Administrator/web_crawler/src/web_crawler/web_crawler.exe  [C:/Users/Administrator/web_crawler/src/web_crawler]
-text: 026_CoreAPI_Configuration_SessionFactory ...
-href: http://yuzhouxiner.iteye.com/blog/2268457
-text: RedHatLinux6.5下安装无线网卡驱动
-href: http://wjrko.iteye.com/blog/2268451
-text: Linux Shell
-href: http://gengzg.iteye.com/blog/2268448
-text:  自己项目中PHP常用工具类大全分享
-href: http://shouce.iteye.com/blog/2268404
-text: 自己实现动态代理
-href: http://hangzhoujava.iteye.com/blog/2268400
-text: 探究数值比较在程序中执行效率的区别
-href: http://tangl163.iteye.com/blog/2268327
-text: Michael Nielsen 's 神经网络学习之一
-href: http://luchi007.iteye.com/blog/2268309
-text: 020_ID生成策略_XML_配置
-href: http://yuzhouxiner.iteye.com/blog/2268315
-text: 【MongoDB】的安装与基本操作
-href: http://gaojingsong.iteye.com/blog/2268304
-text: 常用git命令总结
-href: http://itxiaojiang.iteye.com/blog/2268253
-text: 系统性能优化方法
-href: http://itxiaojiang.iteye.com/blog/2268252
-text: OkHttp的使用简介及封装，实现更简洁的调用 ...
-href: http://dzc.iteye.com/blog/2268386
-text: 归来的微软
-href: http://jiezhu2007.iteye.com/blog/2268117
-text: JSP的几种参数传值
-href: http://gaojingsong.iteye.com/blog/2268297
-text: JAVA代码操作Memcache
-href: http://gaojingsong.iteye.com/blog/2268164
+
+text: 青岛JAVA之旅
+href: http://ye-wolf.iteye.com/blog/2301112
+
+text: mac python2.7安装PIL.Image模块
+href: http://jjhpeopl.iteye.com/blog/2301107
+
+...
 
 */
