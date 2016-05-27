@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 func ScrapeLinks(url string) {
@@ -51,3 +52,11 @@ func main() {
 	ScrapeLinks("https://socketloop.com")
 
 }
+
+/*
+
+Title is [References] and link is [https://socketloop.com/references]
+Title is [Tutorials] and link is [https://socketloop.com/tutorials]
+Title is [Blogs] and link is [https://socketloop.com/blogs]
+
+*/
