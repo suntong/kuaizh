@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"regexp"
 
 	"github.com/andrew-d/goscrape"
 	"github.com/andrew-d/goscrape/extract"
@@ -13,16 +12,16 @@ import (
 
 func main() {
 	config := &scrape.ScrapeConfig{
-		DividePage: scrape.DividePageBySelector("tr:nth-child(3) tr:nth-child(3n-2):not([style='height:10px'])"),
+		DividePage: scrape.DividePageBySelector("tr.athing"),
 
 		Pieces: []scrape.Piece{
 			{Name: "title", Selector: "td.title > a", Extractor: extract.Text{}},
 			{Name: "link", Selector: "td.title > a", Extractor: extract.Attr{Attr: "href"}},
-			{Name: "rank", Selector: "td.title[align='right']",
-				Extractor: extract.Regex{Regex: regexp.MustCompile(`(\d+)`)}},
+			{Name: "no", Selector: "span.rank", Extractor: extract.Text{}},
+			// Extractor: extract.Regex{Regex: regexp.MustCompile(`(\d+)`)}}
 		},
 
-		Paginator: paginate.BySelector("a[rel='nofollow']:last-child", "href"),
+		Paginator: paginate.BySelector("a.morelink", "href"),
 	}
 
 	scraper, err := scrape.New(config)
@@ -33,7 +32,7 @@ func main() {
 
 	results, err := scraper.ScrapeWithOpts(
 		"https://news.ycombinator.com",
-		scrape.ScrapeOptions{MaxPages: 3},
+		scrape.ScrapeOptions{MaxPages: 5},
 	)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error scraping: %s\n", err)
