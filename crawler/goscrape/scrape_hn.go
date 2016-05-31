@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -32,12 +31,40 @@ func main() {
 
 	results, err := scraper.ScrapeWithOpts(
 		"https://news.ycombinator.com",
-		scrape.ScrapeOptions{MaxPages: 5},
+		scrape.ScrapeOptions{MaxPages: 3},
 	)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error scraping: %s\n", err)
 		os.Exit(1)
 	}
 
-	json.NewEncoder(os.Stdout).Encode(results)
+	//json.NewEncoder(os.Stdout).Encode(results)
+	//for _, result := range results.Results {
+	//	for _, r := range result {
+	// for i, r := range results.Results[0] {
+	// 	//json.NewEncoder(os.Stdout).Encode(r)
+	// 	fmt.Printf("%d %s %s\n%s\n\n", i, r["no"], r["title"], r["link"])
+	// }
+	//}
+	for _, r := range results.Results[0] {
+		fmt.Printf("%s %s\n%s\n\n", r["no"], r["title"], r["link"])
+	}
 }
+
+/*
+
+1. Alan Kay's reading list for his students
+http://www.squeakland.org/resources/books/readingList.jsp
+
+...
+
+28. How to print things
+https://byorgey.wordpress.com/how-to-print-things/
+
+29. A Ruby wrapper for LaTeXML
+https://github.com/Authorea/latexml-ruby
+
+30. GE's Walking Truck (1969) [video]
+http://www.educatedearth.net/video.php?id=5000
+
+*/
