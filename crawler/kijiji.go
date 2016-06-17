@@ -40,10 +40,16 @@ func main() {
 		titleHtml, _ := title.Html()
 		locationHtml, _ := location.Html()
 		descriptionHtml, _ := description.Html()
-		fmt.Printf("%v\n%v\n%v\n\n=>\n", titleHtml, locationHtml, descriptionHtml)
-		titleHtml, _ = title.RemoveFiltered("a").Html()
-		locationHtml, _ = location.RemoveClass("date-posted").Html()
-		descriptionHtml, _ = description.Find("div").Remove().Html()
-		fmt.Printf("%v\n%v\n%v\n\n---\n", titleHtml, locationHtml, descriptionHtml)
+		fmt.Printf("%v\n%v\n%v\n%v\n\n=>\n",
+			titleHtml, locationHtml, location.Text(), descriptionHtml)
+		ta := title.Find("a").Remove()
+		taHtml, _ := ta.Html()
+		titleHtml, _ = title.Html()
+		location.Find("span").Remove()
+		locationHtml, _ = location.Html()
+		description.Find("div").Remove()
+		descriptionHtml, _ = description.Html()
+		fmt.Printf("%v\n%v\n%v\n%v\n\n---\n",
+			taHtml, titleHtml, locationHtml, descriptionHtml)
 	})
 }
