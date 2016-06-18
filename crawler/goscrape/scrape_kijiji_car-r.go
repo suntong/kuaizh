@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/go-shaper/shaper"
 	"github.com/suntong/goscrape"
 	"github.com/suntong/goscrape/extract"
@@ -21,7 +22,7 @@ func main() {
 		DividePage: scrape.DividePageBySelector("div.info-container"),
 
 		Pieces: []scrape.Piece{
-			{Name: "FullHtml", Selector: ".", Extractor: extract.OuterHtml{}},
+			{Name: "Raw", Selector: "&", Extractor: extract.OuterHtml{}},
 			{Name: "Price", Selector: "div.price", Extractor: extract.Text{}},
 			// {Name: "Id", Selector: "div.title>a.attr('href')",
 			// 	Extractor: extract.Regex{Regex: regexp.MustCompile(`.*/(\d+)$`)}},
@@ -50,7 +51,10 @@ func main() {
 	}
 
 	for i, r := range results.Results[0] {
-		fmt.Printf("%d: %+v\n\n", i, r)
+		fmt.Printf("%d: %+v\n", i, r)
+		fmt.Printf("   %v\n", config.PieceShaper.Process(
+			r["Raw"].(*goquery.Selection).Find("div.price").Text()))
+		fmt.Printf("   %v\n\n", r["Raw"].(*goquery.Selection).Find("div.details").Text())
 	}
 }
 
@@ -80,7 +84,7 @@ var initHTML = `
   </div>
   <div class="adsense-top-bar">Sponsored Links:</div>
   <hr class="adsense-bottom-bar">
-  <div data-vip-url="/v-cars-trucks/city-of-toronto/2014-fiat-500-l-pickup-truck/1174926196?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/city-of-toronto/2014-fiat-500-l-pickup-truck/1174926196" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1174926196"></div>
       <div class="image">
@@ -94,7 +98,7 @@ var initHTML = `
           $14,999.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/city-of-toronto/2014-fiat-500-l-pickup-truck/1174926196?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/city-of-toronto/2014-fiat-500-l-pickup-truck/1174926196" class="title enable-search-navigation-flag ">
             2014 Fiat 500 L Pickup Truck</a>
         </div>
 
@@ -112,7 +116,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/markham-york-region/cadillac-cts-2003-fully-loaded-gps-nav-best-offer-moving-sale/1174859573?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/markham-york-region/cadillac-cts-2003-fully-loaded-gps-nav-best-offer-moving-sale/1174859573" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1174859573"></div>
       <div class="image">
@@ -126,7 +130,7 @@ var initHTML = `
           $3,000.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/markham-york-region/cadillac-cts-2003-fully-loaded-gps-nav-best-offer-moving-sale/1174859573?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/markham-york-region/cadillac-cts-2003-fully-loaded-gps-nav-best-offer-moving-sale/1174859573" class="title enable-search-navigation-flag ">
             Cadillac cts 2003 fully loaded gps nav (best offer moving sale)</a>
         </div>
 
@@ -144,7 +148,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/city-of-toronto/2006-great-condition-honda-odyssey-minivan-fully-loaded-gps-dv/1174714358?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/city-of-toronto/2006-great-condition-honda-odyssey-minivan-fully-loaded-gps-dv/1174714358" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1174714358"></div>
       <div class="image">
@@ -158,7 +162,7 @@ var initHTML = `
           $10,500.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/city-of-toronto/2006-great-condition-honda-odyssey-minivan-fully-loaded-gps-dv/1174714358?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/city-of-toronto/2006-great-condition-honda-odyssey-minivan-fully-loaded-gps-dv/1174714358" class="title enable-search-navigation-flag ">
             2006 Great condition Honda Odyssey Minivan, fully loaded gps, dv</a>
         </div>
 
@@ -176,7 +180,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/mississauga-peel-region/2004-mazda-rx-8-for-sale-below-value/1173813154?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/mississauga-peel-region/2004-mazda-rx-8-for-sale-below-value/1173813154" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1173813154"></div>
       <div class="image">
@@ -190,7 +194,7 @@ var initHTML = `
           $4,650.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/mississauga-peel-region/2004-mazda-rx-8-for-sale-below-value/1173813154?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/mississauga-peel-region/2004-mazda-rx-8-for-sale-below-value/1173813154" class="title enable-search-navigation-flag ">
             2004 Mazda RX-8 For Sale Below Value!!!!</a>
         </div>
 
@@ -208,7 +212,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/mississauga-peel-region/hyundai-genesis-sedan-2012-3-8l-v6/1173790662?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/mississauga-peel-region/hyundai-genesis-sedan-2012-3-8l-v6/1173790662" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1173790662"></div>
       <div class="image">
@@ -222,7 +226,7 @@ var initHTML = `
           $16,500.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/mississauga-peel-region/hyundai-genesis-sedan-2012-3-8l-v6/1173790662?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/mississauga-peel-region/hyundai-genesis-sedan-2012-3-8l-v6/1173790662" class="title enable-search-navigation-flag ">
             Hyundai Genesis sedan 2012 !! 3.8L v6</a>
         </div>
 
@@ -240,7 +244,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/oshawa-durham-region/mazda-3-gx-sport-2015-lease-assignment/1173446434?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/oshawa-durham-region/mazda-3-gx-sport-2015-lease-assignment/1173446434" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1173446434"></div>
       <div class="image">
@@ -254,7 +258,7 @@ var initHTML = `
           $420.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/oshawa-durham-region/mazda-3-gx-sport-2015-lease-assignment/1173446434?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/oshawa-durham-region/mazda-3-gx-sport-2015-lease-assignment/1173446434" class="title enable-search-navigation-flag ">
             Mazda 3 GX Sport 2015 Lease Assignment</a>
         </div>
 
@@ -272,7 +276,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/markham-york-region/2013-nissan-altima-sv-37000km-navi-sunroof-owner/1173443054?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/markham-york-region/2013-nissan-altima-sv-37000km-navi-sunroof-owner/1173443054" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1173443054"></div>
       <div class="image">
@@ -286,7 +290,7 @@ var initHTML = `
           $16,900.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/markham-york-region/2013-nissan-altima-sv-37000km-navi-sunroof-owner/1173443054?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/markham-york-region/2013-nissan-altima-sv-37000km-navi-sunroof-owner/1173443054" class="title enable-search-navigation-flag ">
             2013 Nissan Altima SV 37000km Navi Sunroof (Owner)</a>
         </div>
 
@@ -304,7 +308,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/city-of-toronto/2001-toyota-camry-other/1173211799?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/city-of-toronto/2001-toyota-camry-other/1173211799" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1173211799"></div>
       <div class="image">
@@ -318,7 +322,7 @@ var initHTML = `
           $1,900.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/city-of-toronto/2001-toyota-camry-other/1173211799?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/city-of-toronto/2001-toyota-camry-other/1173211799" class="title enable-search-navigation-flag ">
             2001 Toyota Camry Other</a>
         </div>
 
@@ -336,7 +340,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/city-of-toronto/2013-ford-fusion-se-2-0t/1136516476?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/city-of-toronto/2013-ford-fusion-se-2-0t/1136516476" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1136516476"></div>
       <div class="image">
@@ -350,7 +354,7 @@ var initHTML = `
           $15,500.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/city-of-toronto/2013-ford-fusion-se-2-0t/1136516476?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/city-of-toronto/2013-ford-fusion-se-2-0t/1136516476" class="title enable-search-navigation-flag ">
             2013 Ford Fusion SE 2.0T</a>
         </div>
 
@@ -368,7 +372,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/city-of-toronto/2004-mercedes-benz-e500-4matic/1172928088?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/city-of-toronto/2004-mercedes-benz-e500-4matic/1172928088" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1172928088"></div>
       <div class="image">
@@ -382,7 +386,7 @@ var initHTML = `
           $7,000.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/city-of-toronto/2004-mercedes-benz-e500-4matic/1172928088?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/city-of-toronto/2004-mercedes-benz-e500-4matic/1172928088" class="title enable-search-navigation-flag ">
             2004 Mercedes-Benz E500 4matic</a>
         </div>
 
@@ -400,7 +404,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/city-of-toronto/2015-toyota-corolla-eco-premium-sedan/1172812523?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/city-of-toronto/2015-toyota-corolla-eco-premium-sedan/1172812523" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1172812523"></div>
       <div class="image">
@@ -414,7 +418,7 @@ var initHTML = `
           $17,500.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/city-of-toronto/2015-toyota-corolla-eco-premium-sedan/1172812523?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/city-of-toronto/2015-toyota-corolla-eco-premium-sedan/1172812523" class="title enable-search-navigation-flag ">
             2015 Toyota Corolla eco premium Sedan</a>
         </div>
 
@@ -432,7 +436,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/mississauga-peel-region/2010-dodge-charger-sxt-sedan/1172154078?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/mississauga-peel-region/2010-dodge-charger-sxt-sedan/1172154078" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1172154078"></div>
       <div class="image">
@@ -446,7 +450,7 @@ var initHTML = `
           $12,999.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/mississauga-peel-region/2010-dodge-charger-sxt-sedan/1172154078?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/mississauga-peel-region/2010-dodge-charger-sxt-sedan/1172154078" class="title enable-search-navigation-flag ">
             2010 Dodge Charger sxt Sedan</a>
         </div>
 
@@ -464,7 +468,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/city-of-toronto/2013-mazda-mazda3-sedan/1172081358?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/city-of-toronto/2013-mazda-mazda3-sedan/1172081358" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1172081358"></div>
       <div class="image">
@@ -478,7 +482,7 @@ var initHTML = `
           $8,400.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/city-of-toronto/2013-mazda-mazda3-sedan/1172081358?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/city-of-toronto/2013-mazda-mazda3-sedan/1172081358" class="title enable-search-navigation-flag ">
             2013 Mazda Mazda3 Sedan</a>
         </div>
 
@@ -496,7 +500,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/city-of-toronto/2015-toyota-corolla-evo-premium-sedan/1171977906?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/city-of-toronto/2015-toyota-corolla-evo-premium-sedan/1171977906" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1171977906"></div>
       <div class="image">
@@ -510,7 +514,7 @@ var initHTML = `
           $17,900.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/city-of-toronto/2015-toyota-corolla-evo-premium-sedan/1171977906?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/city-of-toronto/2015-toyota-corolla-evo-premium-sedan/1171977906" class="title enable-search-navigation-flag ">
             2015 Toyota Corolla Evo premium Sedan</a>
         </div>
 
@@ -528,7 +532,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/markham-york-region/2-year-lease-takeover-2014-chevrolet-cruze-2lt-rally-sport-rs/1170412657?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/markham-york-region/2-year-lease-takeover-2014-chevrolet-cruze-2lt-rally-sport-rs/1170412657" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1170412657"></div>
       <div class="image">
@@ -542,7 +546,7 @@ var initHTML = `
           $182.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/markham-york-region/2-year-lease-takeover-2014-chevrolet-cruze-2lt-rally-sport-rs/1170412657?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/markham-york-region/2-year-lease-takeover-2014-chevrolet-cruze-2lt-rally-sport-rs/1170412657" class="title enable-search-navigation-flag ">
             2 Year Lease Takeover - 2014 Chevrolet Cruze 2LT Rally Sport, RS</a>
         </div>
 
@@ -560,7 +564,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/oshawa-durham-region/2010-nissan-sentra-se-r-sedan/1170021437?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/oshawa-durham-region/2010-nissan-sentra-se-r-sedan/1170021437" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1170021437"></div>
       <div class="image">
@@ -574,7 +578,7 @@ var initHTML = `
           $11,400.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/oshawa-durham-region/2010-nissan-sentra-se-r-sedan/1170021437?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/oshawa-durham-region/2010-nissan-sentra-se-r-sedan/1170021437" class="title enable-search-navigation-flag ">
             2010 Nissan Sentra SE-R Sedan</a>
         </div>
 
@@ -592,7 +596,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/city-of-toronto/2015-chevrolet-cruze-ltz-sedan/1169439739?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/city-of-toronto/2015-chevrolet-cruze-ltz-sedan/1169439739" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1169439739"></div>
       <div class="image">
@@ -606,7 +610,7 @@ var initHTML = `
           $13,300.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/city-of-toronto/2015-chevrolet-cruze-ltz-sedan/1169439739?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/city-of-toronto/2015-chevrolet-cruze-ltz-sedan/1169439739" class="title enable-search-navigation-flag ">
             2015 Chevrolet Cruze LTZ Sedan</a>
         </div>
 
@@ -624,7 +628,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/city-of-toronto/audi-q7-4-2-for-11-200-firm/1168333341?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/city-of-toronto/audi-q7-4-2-for-11-200-firm/1168333341" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1168333341"></div>
       <div class="image">
@@ -638,7 +642,7 @@ var initHTML = `
           $11,200.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/city-of-toronto/audi-q7-4-2-for-11-200-firm/1168333341?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/city-of-toronto/audi-q7-4-2-for-11-200-firm/1168333341" class="title enable-search-navigation-flag ">
             Audi Q7 4.2 for $11.200 firm </a>
         </div>
 
@@ -656,7 +660,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/oakville-halton-region/2014-jeep-compass/1145692677?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/oakville-halton-region/2014-jeep-compass/1145692677" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1145692677"></div>
       <div class="image">
@@ -670,7 +674,7 @@ var initHTML = `
           $15,800.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/oakville-halton-region/2014-jeep-compass/1145692677?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/oakville-halton-region/2014-jeep-compass/1145692677" class="title enable-search-navigation-flag ">
             2014 Jeep Compass</a>
         </div>
 
@@ -688,7 +692,7 @@ var initHTML = `
       </div>
     </div>
   </div>
-  <div data-vip-url="/v-cars-trucks/city-of-toronto/2013-honda-civic-touring-sedan/1167900714?enableSearchNavigationFlag=true" class="search-item regular-ad">
+  <div data-vip-url="/v-cars-trucks/city-of-toronto/2013-honda-civic-touring-sedan/1167900714" class="search-item regular-ad">
     <div class="left-col">
       <div class="watch watchlist-star p-vap-lnk-actn-addwtch" title="Click to add to My Watchlist" data-action="add" data-adid="1167900714"></div>
       <div class="image">
@@ -702,7 +706,7 @@ var initHTML = `
           $17,999.00</div>
 
         <div class="title">
-          <a href="/v-cars-trucks/city-of-toronto/2013-honda-civic-touring-sedan/1167900714?enableSearchNavigationFlag=true" class="title enable-search-navigation-flag ">
+          <a href="/v-cars-trucks/city-of-toronto/2013-honda-civic-touring-sedan/1167900714" class="title enable-search-navigation-flag ">
             2013 Honda Civic TOURING Sedan</a>
         </div>
 
@@ -725,3 +729,26 @@ var initHTML = `
 </body>
 </html>
 `
+
+/*
+
+Output:
+
+0: map[Link:/v-cars-trucks/city-of-toronto/2014-fiat-500-l-pickup-truck/1174926196 Description:Looking to let go of this 2014 Fiat 500L. This truck is front wheel drive, 1.4 L turbo engine, fully loaded with navigation GPS Brand new tires. Comes certified with safety and emissions Private 2200km | Automatic Details:2200km | Automatic Raw:0xc82011dbc0 Price:$14,999.00 Title:2014 Fiat 500 L Pickup Truck]
+   $14,999.00
+
+            2200km | Automatic
+
+1: map[Raw:0xc82011dbf0 Price:$3,000.00 Title:Cadillac cts 2003 fully loaded gps nav (best offer moving sale) Link:/v-cars-trucks/markham-york-region/cadillac-cts-2003-fully-loaded-gps-nav-best-offer-moving-sale/1174859573 Description:Moving overseas fire sale. Check out my other ads! Best offer/ first real person with cash, not PayPal. All reasonable offers considered, low balls ignored. Luxury without breaking the bank. Fully 177km | Automatic Details:177km | Automatic]
+   $3,000.00
+
+            177km | Automatic
+
+...
+
+19: map[Raw:0xc82011df50 Price:$17,999.00 Title:2013 Honda Civic TOURING Sedan Link:/v-cars-trucks/city-of-toronto/2013-honda-civic-touring-sedan/1167900714 Description:Hello, Am selling 2013 Honda Civic Touring fully loaded (GPS Navigartion,sunroof,back up camera, heated seats leather interior, and much more, no accsidents and will provide car proof. Looks brand 42000km | Automatic Details:42000km | Automatic]
+   $17,999.00
+
+            42000km | Automatic
+
+*/
