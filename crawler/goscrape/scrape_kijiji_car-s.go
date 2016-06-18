@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -28,6 +27,7 @@ func main() {
 		},
 
 		Paginator:   paginate.BySelector("a[title='Next']", "href"),
+		Opts:        scrape.ScrapeOptions{MaxPages: 1},
 		PieceShaper: shaper.NewFilter().ApplyTrim().ApplyRegSpaces(),
 	}
 
@@ -37,14 +37,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	results, err := scraper.ScrapeWithOpts(
-		"http://www.kijiji.ca/b-cars-trucks/gta-greater-toronto-area/gps/k0c174l1700272?ad=offering&price=__18000&kilometers=__90000&transmission=2&for-sale-by=ownr",
-		scrape.ScrapeOptions{MaxPages: 5},
-	)
+	results, err := scraper.ScrapeUrl(
+		"http://www.kijiji.ca/b-cars-trucks/gta-greater-toronto-area/gps/k0c174l1700272?ad=offering&price=__18000&kilometers=__90000&transmission=2&for-sale-by=ownr")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error scraping: %s\n", err)
 		os.Exit(1)
 	}
 
-	json.NewEncoder(os.Stdout).Encode(results)
+	fmt.Printf("%+v\n", results)
 }
