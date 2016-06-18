@@ -49,7 +49,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("%+v\n", results)
+	for i, r := range results.Results[0] {
+		fmt.Printf("%d: %+v\n\n", i, r)
+	}
 }
 
 var initHTML = `
