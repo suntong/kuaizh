@@ -28,6 +28,7 @@ func main() {
 			// 	Extractor: extract.Regex{Regex: regexp.MustCompile(`.*/(\d+)$`)}},
 			{Name: "Title", Selector: "div.title", Extractor: extract.Text{}},
 			{Name: "Link", Selector: "div.title > a", Extractor: extract.Attr{Attr: "href"}},
+			{Name: "Location", Selector: "div.location", Extractor: extract.Text{}},
 			{Name: "Description", Selector: "div.description", Extractor: extract.Text{}},
 			{Name: "Details", Selector: "div.details", Extractor: extract.Text{}},
 			//{Name: "", Selector: "div.", Extractor: extract.Text{}},
@@ -51,10 +52,15 @@ func main() {
 	}
 
 	for i, r := range results.Results[0] {
+		// X: fmt.Printf("%d: %v\n", i, json.NewEncoder(os.Stdout).Encode(r))
 		fmt.Printf("%d: %+v\n", i, r)
+		s := r["Raw"].(*goquery.Selection)
+		location := s.Find("div.location")
+		location.Find("span").Remove()
+		fmt.Printf("   %v\n", config.PieceShaper.Process(location.Text()))
 		fmt.Printf("   %v\n", config.PieceShaper.Process(
-			r["Raw"].(*goquery.Selection).Find("div.price").Text()))
-		fmt.Printf("   %v\n\n", r["Raw"].(*goquery.Selection).Find("div.details").Text())
+			s.Find("div.price").Text()))
+		fmt.Printf("   %v\n\n", s.Find("div.details").Text())
 	}
 }
 
@@ -734,19 +740,22 @@ var initHTML = `
 
 Output:
 
-0: map[Link:/v-cars-trucks/city-of-toronto/2014-fiat-500-l-pickup-truck/1174926196 Description:Looking to let go of this 2014 Fiat 500L. This truck is front wheel drive, 1.4 L turbo engine, fully loaded with navigation GPS Brand new tires. Comes certified with safety and emissions Private 2200km | Automatic Details:2200km | Automatic Raw:0xc82011dbc0 Price:$14,999.00 Title:2014 Fiat 500 L Pickup Truck]
+0: map[Location:City of Toronto< 18 hours ago Description:Looking to let go of this 2014 Fiat 500L. This truck is front wheel drive, 1.4 L turbo engine, fully loaded with navigation GPS Brand new tires. Comes certified with safety and emissions Private 2200km | Automatic Details:2200km | Automatic Raw:0xc8201478c0 Price:$14,999.00 Title:2014 Fiat 500 L Pickup Truck Link:/v-cars-trucks/city-of-toronto/2014-fiat-500-l-pickup-truck/1174926196]
+   City of Toronto
    $14,999.00
 
             2200km | Automatic
 
-1: map[Raw:0xc82011dbf0 Price:$3,000.00 Title:Cadillac cts 2003 fully loaded gps nav (best offer moving sale) Link:/v-cars-trucks/markham-york-region/cadillac-cts-2003-fully-loaded-gps-nav-best-offer-moving-sale/1174859573 Description:Moving overseas fire sale. Check out my other ads! Best offer/ first real person with cash, not PayPal. All reasonable offers considered, low balls ignored. Luxury without breaking the bank. Fully 177km | Automatic Details:177km | Automatic]
+1: map[Price:$3,000.00 Title:Cadillac cts 2003 fully loaded gps nav (best offer moving sale) Link:/v-cars-trucks/markham-york-region/cadillac-cts-2003-fully-loaded-gps-nav-best-offer-moving-sale/1174859573 Location:Markham / York Region< 22 hours ago Description:Moving overseas fire sale. Check out my other ads! Best offer/ first real person with cash, not PayPal. All reasonable offers considered, low balls ignored. Luxury without breaking the bank. Fully 177km | Automatic Details:177km | Automatic Raw:0xc8201478f0]
+   Markham / York Region
    $3,000.00
 
             177km | Automatic
 
 ...
 
-19: map[Raw:0xc82011df50 Price:$17,999.00 Title:2013 Honda Civic TOURING Sedan Link:/v-cars-trucks/city-of-toronto/2013-honda-civic-touring-sedan/1167900714 Description:Hello, Am selling 2013 Honda Civic Touring fully loaded (GPS Navigartion,sunroof,back up camera, heated seats leather interior, and much more, no accsidents and will provide car proof. Looks brand 42000km | Automatic Details:42000km | Automatic]
+19: map[Location:City of Toronto24/05/2016 Description:Hello, Am selling 2013 Honda Civic Touring fully loaded (GPS Navigartion,sunroof,back up camera, heated seats leather interior, and much more, no accsidents and will provide car proof. Looks brand 42000km | Automatic Details:42000km | Automatic Raw:0xc820147c50 Price:$17,999.00 Title:2013 Honda Civic TOURING Sedan Link:/v-cars-trucks/city-of-toronto/2013-honda-civic-touring-sedan/1167900714]
+   City of Toronto
    $17,999.00
 
             42000km | Automatic
