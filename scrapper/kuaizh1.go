@@ -34,11 +34,12 @@ func main0() {
 	}
 
 	fmt.Println("\n")
-	scrapePages(items)
-	fmt.Println("\n")
 }
 
 func main() {
+	items := []string{`5`, `4`, `3`, `2`, `1`}
+	scrapePages(items)
+	fmt.Println("\n")
 	scrapePage()
 }
 
@@ -69,10 +70,15 @@ func scrapeIndexes() (*scrape.ScrapeResults, error) {
 
 //Input is url slice
 func scrapePages(items []string) {
-	fmt.Println("爬取内容条数：", len(items))
-	for _, url := range items {
+	ilen := len(items)
+	fmt.Println("Total: ", ilen)
+	for i := range items {
+		// iterate over the slice in reverse order
+		ir := i + 1
+		url := items[ilen-ir]
 		if url != "" {
-			fmt.Println("开始抓取url：", url)
+			id := fmt.Sprintf("%02d", ir)
+			fmt.Printf("%s: %s\n", id, url)
 			// doc, _ := goquery.NewDocument(url)
 			// title := doc.Find(".blog_title").Find("h3").Find("a").Text()
 			// fmt.Println("标题:", title)
