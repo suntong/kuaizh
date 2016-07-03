@@ -7,15 +7,18 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/go-shaper/shaper"
+	"github.com/spakin/awk"
 	"github.com/suntong/goscrape"
 	"github.com/suntong/goscrape/extract"
 	"github.com/suntong/goscrape/paginate"
+	"gopkg.in/pipe.v2"
 )
 
 func main0() {
@@ -37,10 +40,8 @@ func main0() {
 }
 
 func main() {
-	items := []string{`5`, `4`, `3`, `2`, `1`}
+	items := []string{`3`, `2`, `1`}
 	scrapePages(items)
-	fmt.Println("\n")
-	scrapePage()
 }
 
 func scrapeIndexes() (*scrape.ScrapeResults, error) {
@@ -68,7 +69,7 @@ func scrapeIndexes() (*scrape.ScrapeResults, error) {
 	return scraper.ScrapeHTML(initHTMLI)
 }
 
-//Input is url slice
+// Input is url slice
 func scrapePages(items []string) {
 	ilen := len(items)
 	fmt.Println("Total: ", ilen)
@@ -78,23 +79,85 @@ func scrapePages(items []string) {
 		url := items[ilen-ir]
 		if url != "" {
 			id := fmt.Sprintf("%02d", ir)
-			fmt.Printf("%s: %s\n", id, url)
+			title := scrapePage(id, url)
+			fmt.Println("TT:", title)
+			//fmt.Println("C:", cntStr)
 			// doc, _ := goquery.NewDocument(url)
-			// title := doc.Find(".blog_title").Find("h3").Find("a").Text()
-			// fmt.Println("标题:", title)
 			// time.Sleep(2 * time.Second)
 		}
 	}
 }
 
-func scrapePage() {
+func scrapePage(id, url string) (title string) {
+	fmt.Printf("\n%s: %s\n", id, url)
 	// func NewDocumentFromReader(r io.Reader) (*Document, error)
 	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(initHTMLP))
-	title := doc.Find("article.post h1.entry-title").Text()
-	fmt.Println("标题:", title)
+	title = doc.Find("article.post h1.entry-title").Text()
 	cnt := doc.Find("div.entry-content pre")
 	cntStr := cnt.Text()
-	fmt.Println("内容:", cntStr)
+
+	outfile := fmt.Sprintf("%s-%s.go", id, title)
+	buf := new(bytes.Buffer)
+	buf.WriteString(title)
+	buf.WriteString(cntStr)
+	psrc, pdst := pipe.Script(
+		pipe.Read(buf),
+	), pipe.Script(
+		pipe.WriteFile(outfile, 0644),
+	)
+
+	p := pipe.Line(
+		psrc,
+		pgAwk(),
+		pdst,
+	)
+	err := pipe.Run(p)
+	check(err)
+	return
+}
+
+func pgAwk() pipe.Pipe {
+	return pipe.TaskFunc(func(st *pipe.State) error {
+		// == Setup
+		s := awk.NewScript()
+		s.Output = st.Stdout
+
+		s.Begin = func(s *awk.Script) {
+			s.Println("/*\n")
+		}
+
+		s.End = func(s *awk.Script) {
+			s.Println("\n*/")
+		}
+
+		s.AppendStmt(func(s *awk.Script) bool {
+			return s.F(1).Match("^ *package")
+		}, func(s *awk.Script) {
+			s.Println("\n*/\n")
+		})
+
+		s.AppendStmt(func(s *awk.Script) bool {
+			return s.F(1).Match("^ *执行结果")
+		}, func(s *awk.Script) {
+			s.Println("/*\n")
+		})
+
+		// 1; # i.e., print all
+		s.AppendStmt(nil, nil)
+
+		// == Run it
+		return s.Run(st.Stdin)
+	})
+
+}
+
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+// Support functions
+
+func check(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 // http://www.kuaizh.com/?cat=12
