@@ -97,10 +97,10 @@ func scrapePage(id, url string) (title string) {
 	cnt := doc.Find("div.entry-content pre")
 	cntStr := cnt.Text()
 
-	r := strings.NewReplacer(":", "：", "/", "／")
+	r := strings.NewReplacer(":", "：", "/", "／", " ", "")
 	outfile := fmt.Sprintf("%s-%s.go", id, r.Replace(title))
 	buf := new(bytes.Buffer)
-	buf.WriteString(title)
+	fmt.Fprintf(buf, "%s\n%s\n\n", title, url)
 	buf.WriteString(cntStr)
 	psrc, pdst := pipe.Script(
 		pipe.Read(buf),
@@ -139,9 +139,11 @@ func pgAwk() pipe.Pipe {
 		})
 
 		s.AppendStmt(func(s *awk.Script) bool {
-			return s.F(1).Match("^ *执行结果")
+			return s.F(1).Match("^}")
 		}, func(s *awk.Script) {
-			s.Println("/*\n")
+			s.Println()
+			s.Println("\n/*\n")
+			s.Next()
 		})
 
 		// 1; # i.e., print all
