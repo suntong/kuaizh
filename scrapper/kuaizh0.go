@@ -23,11 +23,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	items := make([]string, 2)
 	for _, rs := range results.Results {
 		for i, r := range rs {
 			fmt.Printf("%d: %+v\n", i, r)
+			items = append(items, r["Link"].(string))
 		}
 	}
+
+	scrapePages(items)
+
 }
 
 func scrapeIndexes() (*scrape.ScrapeResults, error) {
@@ -53,6 +58,23 @@ func scrapeIndexes() (*scrape.ScrapeResults, error) {
 	}
 
 	return scraper.ScrapeHTML(initHTMLI)
+}
+
+//参数为要爬取的url分片
+func scrapePages(items []string) {
+	fmt.Println("爬取内容条数：", len(items))
+	for _, url := range items {
+		if url != "" {
+			fmt.Println("开始抓取url：", url)
+			// doc, _ := goquery.NewDocument(url)
+			// title := doc.Find(".blog_title").Find("h3").Find("a").Text()
+			// fmt.Println("标题:", title)
+			// cnt := doc.Find(".blog_content")
+			// cntStr := cnt.Text()
+			// fmt.Println("内容:", cntStr)
+			// time.Sleep(2 * time.Second)
+		}
+	}
 }
 
 // http://www.kuaizh.com/?cat=12
