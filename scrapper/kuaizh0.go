@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////
-// Program: scrape_kijiji_car-r
-// Purpose: Kijiji web scrapping using the Raw interface
+// Program: kuaizh0.go
+// Purpose: kuaizh web scrapping trial
 // Authors: Tong Sun (c) 2016, All rights reserved
 ////////////////////////////////////////////////////////////////////////////
 
@@ -9,7 +9,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/go-shaper/shaper"
 	"github.com/suntong/goscrape"
 	"github.com/suntong/goscrape/extract"
@@ -23,7 +25,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	items := make([]string, 2)
+	items := []string{}
 	for _, rs := range results.Results {
 		for i, r := range rs {
 			fmt.Printf("%d: %+v\n", i, r)
@@ -31,8 +33,10 @@ func main() {
 		}
 	}
 
+	fmt.Println("\n")
 	scrapePages(items)
-
+	fmt.Println("\n")
+	scrapePage()
 }
 
 func scrapeIndexes() (*scrape.ScrapeResults, error) {
@@ -69,12 +73,19 @@ func scrapePages(items []string) {
 			// doc, _ := goquery.NewDocument(url)
 			// title := doc.Find(".blog_title").Find("h3").Find("a").Text()
 			// fmt.Println("标题:", title)
-			// cnt := doc.Find(".blog_content")
-			// cntStr := cnt.Text()
-			// fmt.Println("内容:", cntStr)
 			// time.Sleep(2 * time.Second)
 		}
 	}
+}
+
+func scrapePage() {
+	// func NewDocumentFromReader(r io.Reader) (*Document, error)
+	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(initHTMLP))
+	title := doc.Find("article.post h1.entry-title").Text()
+	fmt.Println("标题:", title)
+	cnt := doc.Find("div.entry-content pre")
+	cntStr := cnt.Text()
+	fmt.Println("内容:", cntStr)
 }
 
 // http://www.kuaizh.com/?cat=12
