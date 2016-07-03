@@ -10,6 +10,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -21,7 +22,7 @@ import (
 	"gopkg.in/pipe.v2"
 )
 
-func main0() {
+func main() {
 	results, err := scrapeIndexes()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error scraping: %s\n", err)
@@ -37,6 +38,10 @@ func main0() {
 	}
 
 	fmt.Println("\n")
+	// cut out the last 7 items
+	items = items[:len(items)-7]
+	// duplicate the last item
+	items = append(items, items[len(items)-1])
 	scrapePages(items)
 }
 
@@ -92,7 +97,8 @@ func scrapePage(id, url string) (title string) {
 	cnt := doc.Find("div.entry-content pre")
 	cntStr := cnt.Text()
 
-	outfile := fmt.Sprintf("%s-%s.go", id, title)
+	r := strings.NewReplacer(":", "：", "/", "／")
+	outfile := fmt.Sprintf("%s-%s.go", id, r.Replace(title))
 	buf := new(bytes.Buffer)
 	buf.WriteString(title)
 	buf.WriteString(cntStr)
