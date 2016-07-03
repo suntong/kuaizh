@@ -10,7 +10,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/go-shaper/shaper"
@@ -37,10 +37,6 @@ func main0() {
 	}
 
 	fmt.Println("\n")
-}
-
-func main() {
-	items := []string{`3`, `2`, `1`}
 	scrapePages(items)
 }
 
@@ -55,8 +51,8 @@ func scrapeIndexes() (*scrape.ScrapeResults, error) {
 			//{Name: "", Selector: "div.", Extractor: extract.Text{}},
 		},
 
-		Paginator:   paginate.BySelector("div#pagination a.next", "href"),
-		Opts:        scrape.ScrapeOptions{MaxPages: 1},
+		Paginator: paginate.BySelector("div#pagination a.next", "href"),
+		//Opts:        scrape.ScrapeOptions{MaxPages: 1},
 		PieceShaper: shaper.NewFilter().ApplyRegSpaces(), // .ApplyTrim()
 	}
 
@@ -66,7 +62,8 @@ func scrapeIndexes() (*scrape.ScrapeResults, error) {
 		os.Exit(1)
 	}
 
-	return scraper.ScrapeHTML(initHTMLI)
+	//return scraper.ScrapeHTML(initHTMLI)
+	return scraper.ScrapeUrl("http://www.kuaizh.com/?cat=12")
 }
 
 // Input is url slice
@@ -81,9 +78,7 @@ func scrapePages(items []string) {
 			id := fmt.Sprintf("%02d", ir)
 			title := scrapePage(id, url)
 			fmt.Println("TT:", title)
-			//fmt.Println("C:", cntStr)
-			// doc, _ := goquery.NewDocument(url)
-			// time.Sleep(2 * time.Second)
+			time.Sleep(2 * time.Second)
 		}
 	}
 }
@@ -91,7 +86,8 @@ func scrapePages(items []string) {
 func scrapePage(id, url string) (title string) {
 	fmt.Printf("\n%s: %s\n", id, url)
 	// func NewDocumentFromReader(r io.Reader) (*Document, error)
-	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(initHTMLP))
+	//doc, _ := goquery.NewDocumentFromReader(strings.NewReader(initHTMLP))
+	doc, _ := goquery.NewDocument(url)
 	title = doc.Find("article.post h1.entry-title").Text()
 	cnt := doc.Find("div.entry-content pre")
 	cntStr := cnt.Text()
