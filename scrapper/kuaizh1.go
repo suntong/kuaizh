@@ -94,7 +94,7 @@ func scrapePage(id, url string) (title string) {
 	//doc, _ := goquery.NewDocumentFromReader(strings.NewReader(initHTMLP))
 	doc, _ := goquery.NewDocument(url)
 	title = doc.Find("article.post h1.entry-title").Text()
-	cnt := doc.Find("div.entry-content pre")
+	cnt := doc.Find("div.entry-content")
 	cntStr := cnt.Text()
 
 	r := strings.NewReplacer(":", "：", "/", "／", " ", "")
@@ -138,12 +138,17 @@ func pgAwk() pipe.Pipe {
 			s.Println("\n*/\n")
 		})
 
+		// s.AppendStmt(func(s *awk.Script) bool {
+		// 	return s.F(1).Match("^}")
+		// }, func(s *awk.Script) {
+		// 	s.Println()
+		// 	s.Println("\n/*\n")
+		// 	s.Next()
+		// })
 		s.AppendStmt(func(s *awk.Script) bool {
-			return s.F(1).Match("^}")
+			return s.F(1).Match("^ *(执行|输出|结果)")
 		}, func(s *awk.Script) {
-			s.Println()
-			s.Println("\n/*\n")
-			s.Next()
+			s.Println("/*\n")
 		})
 
 		// 1; # i.e., print all
