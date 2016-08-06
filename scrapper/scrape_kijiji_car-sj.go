@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -15,19 +16,19 @@ func main() {
 		DividePage: scrape.DividePageBySelector("div.info-container"),
 
 		Pieces: []scrape.Piece{
-			{Name: "FullHtml", Selector: ".", Extractor: extract.OuterHtml{}},
+			//{Name: "FullHtml", Selector: ".", Extractor: extract.OuterHtml{}},
 			{Name: "Price", Selector: "div.price", Extractor: extract.Text{}},
 			// {Name: "Id", Selector: "div.title>a.attr('href')",
 			// 	Extractor: extract.Regex{Regex: regexp.MustCompile(`.*/(\d+)$`)}},
 			{Name: "Title", Selector: "div.title", Extractor: extract.Text{}},
-			{Name: "Link", Selector: "div.title > a", Extractor: extract.Attr{Attr: "href"}},
+			//{Name: "Link", Selector: "div.title > a", Extractor: extract.Attr{Attr: "href"}},
 			{Name: "Description", Selector: "div.description", Extractor: extract.Text{}},
 			{Name: "Details", Selector: "div.details", Extractor: extract.Text{}},
 			//{Name: "", Selector: "div.", Extractor: extract.Text{}},
 		},
 
 		Paginator:   paginate.BySelector("a[title='Next']", "href"),
-		Opts:        scrape.ScrapeOptions{MaxPages: 1},
+		Opts:        scrape.ScrapeOptions{MaxPages: 8},
 		PieceShaper: shaper.NewFilter().ApplyTrim().ApplyRegSpaces(),
 	}
 
@@ -44,5 +45,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("%+v\n", results)
+	json.NewEncoder(os.Stdout).Encode(results)
 }
