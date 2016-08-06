@@ -1,15 +1,14 @@
-package minhash
+package main
 
 import (
-	"testing"
-
 	"github.com/dgryski/go-metro"
+	"github.com/dgryski/go-minhash"
 	"github.com/dgryski/go-spooky"
 )
 
 func mhash(b []byte) uint64 { return metro.Hash64(b, 0) }
 
-func TestMinwise(t *testing.T) {
+func main() {
 
 	tests := []struct {
 		s1 []string
@@ -22,8 +21,8 @@ func TestMinwise(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		m1 := NewMinWise(spooky.Hash64, mhash, 10)
-		m2 := NewMinWise(spooky.Hash64, mhash, 10)
+		m1 := minhash.NewMinWise(spooky.Hash64, mhash, 10)
+		m2 := minhash.NewMinWise(spooky.Hash64, mhash, 10)
 
 		for _, s := range tt.s1 {
 			m1.Push([]byte(s))
@@ -33,6 +32,13 @@ func TestMinwise(t *testing.T) {
 			m2.Push([]byte(s))
 		}
 
-		t.Log(m1.Similarity(m2))
+		print(m1.Similarity(m2))
 	}
 }
+
+/*
+
+$ go run minhash-test.go
++5.000000e-001
+
+*/
