@@ -57,20 +57,20 @@ var buildTime = "2016-12-25"
 
 /*
 
-go run GitHubSearch.go 'q=easygen&sort=stars&order=desc'
-go run GitHubSearch.go 'q="github.com/goadesign/goa/design/apidsl"+language:go&sort=stars&order=desc'
+go run GitHubSearch.go 'repositories?q=easygen&sort=stars&order=desc'
+go run GitHubSearch.go 'code?q="github.com/goadesign/goa/design/apidsl"+language:go&sort=stars&order=desc'
 
 */
 
 func main() {
 	if len(os.Args) <= 1 {
 		println("Usage:\n  ", progname, "api.github.com_search_string\n\nE.g.\n",
-			progname, "q=easygen+language:go&sort=stars&order=desc")
+			progname, "repositories?q=easygen+language:go&sort=stars&order=desc")
 		os.Exit(0)
 	}
 
 	data := &GitHubSearch{}
-	jhs.GetJSON("https://api.github.com/search/repositories?"+os.Args[1], &data)
+	jhs.GetJSON("https://api.github.com/search/"+os.Args[1], &data)
 
 	for i, h := range data.Items {
 		data.Items[i].LivedFor = int(h.UpdatedAt.Sub(h.CreatedAt) / (24 * time.Hour))
