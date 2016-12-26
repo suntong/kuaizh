@@ -1,8 +1,18 @@
 ////////////////////////////////////////////////////////////////////////////
-// Package: GitHubSearch.go
+// Package: GitHubSearchAPI.go
 // Purpose: GitHub search wrapper
 // Authors: Tong Sun (c) 2016, All rights reserved
 ////////////////////////////////////////////////////////////////////////////
+
+/*
+
+Refs:
+
+https://developer.github.com/v3/search/
+https://help.github.com/articles/searching-repositories/
+https://github.com/blog/1564-code-search-api
+
+*/
 
 package main
 
@@ -49,7 +59,7 @@ type GitHubSearchItem struct {
 ////////////////////////////////////////////////////////////////////////////
 // Global variables definitions
 
-var progname = "GitHubSearch"
+var progname = "GitHubSearchAPI"
 var buildTime = "2016-12-25"
 
 ////////////////////////////////////////////////////////////////////////////
@@ -57,8 +67,8 @@ var buildTime = "2016-12-25"
 
 /*
 
-go run GitHubSearch.go 'repositories?q=easygen&sort=stars&order=desc'
-go run GitHubSearch.go 'code?q="github.com/goadesign/goa/design/apidsl"+language:go&sort=stars&order=desc'
+go run GitHubSearchAPI.go 'repositories?q=easygen&sort=stars&order=desc'
+go run GitHubSearchAPI.go 'code?q="github.com/goadesign/goa/design/apidsl"+language:go&sort=stars&order=desc'
 
 */
 
