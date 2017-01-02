@@ -51,7 +51,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	results, err := scrapeWeb("https://github.com/search" + os.Args[1])
+	results, err := scrapeWeb("https://github.com/search?" + os.Args[1])
 	check(err)
 	//fmt.Printf("%+v\n", results)
 
@@ -71,7 +71,7 @@ func scrapeWeb(url string) (*scrape.ScrapeResults, error) {
 			//{Name: "", Selector: "div.", Extractor: extract.Text{}},
 		},
 
-		Paginator:   paginate.BySelector("divp.agination a.next", "href"),
+		Paginator:   paginate.BySelector("divp.pagination a.next_page", "href"),
 		Opts:        scrape.ScrapeOptions{MaxPages: 1},
 		PieceShaper: shaper.NewFilter().ApplyRegSpaces().ApplyTrim(),
 	}
