@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"time"
 
 	tb "gopkg.in/tucnak/telebot.v2"
@@ -9,7 +10,7 @@ import (
 
 func main() {
 	b, err := tb.NewBot(tb.Settings{
-		Token:  "TOKEN_HERE",
+		Token:  os.Getenv("TELEGRAM_BOT_TOKEN"),
 		Poller: &tb.LongPoller{Timeout: 10 * time.Second},
 	})
 
@@ -19,7 +20,9 @@ func main() {
 	}
 
 	b.Handle("/hello", func(m *tb.Message) {
-		b.Send(m.Sender, "hello world")
+		log.Printf("%+v\n", m)
+		b.Send(m.Sender, "hello back to the sender")
+		b.Send(m.Chat, "hello back to the group")
 	})
 
 	b.Start()
