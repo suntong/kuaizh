@@ -61,7 +61,7 @@ func (this *AiClient) VisionImgReaderToText(img io.Reader) (error, VisionImgToTe
 	data := make(map[string]string)
 	data["app_id"] = this.Appid
 	data["time_stamp"] = fmt.Sprintf("%d", time.Now().Unix())
-	data["nonce_str"] = GetRandomString(30)
+	data["nonce_str"] = "123456" // GetRandomString(30)
 	data["session_id"] = "100"
 	data["image"] = string(base64.StdEncoding.EncodeToString(buffer.Bytes()))
 
@@ -72,7 +72,7 @@ func (this *AiClient) VisionImgReaderToText(img io.Reader) (error, VisionImgToTe
 		return err, vtt
 	}
 
-	fmt.Printf("Ret: %#v\n", resp.Body)
+	// fmt.Printf("Ret: %#v\n", resp.Body)
 	json.NewDecoder(resp.Body).Decode(&vtt)
 	return nil, vtt
 }
