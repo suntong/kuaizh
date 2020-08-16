@@ -28,6 +28,18 @@ func (this *AiClient) VisionImgFileToText(img string) (error, VisionImgToTextRes
 
 }
 
+/*
+
+{
+    "ret": 0,
+    "msg": "ok",
+    "data": {
+        "text": "图像描述信息"
+    }
+}
+
+*/
+
 type VisionImgToTextRespData struct {
 	Text string `json:"text, omitempty"`
 }
@@ -60,6 +72,7 @@ func (this *AiClient) VisionImgReaderToText(img io.Reader) (error, VisionImgToTe
 		return err, vtt
 	}
 
+	fmt.Printf("Ret: %#v\n", resp.Body)
 	json.NewDecoder(resp.Body).Decode(&vtt)
 	return nil, vtt
 }

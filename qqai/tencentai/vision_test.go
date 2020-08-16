@@ -19,7 +19,8 @@ func TestVisionImgFileToText(t *testing.T) {
 		if vtt.Ret != 0 {
 			t.Fatalf("Expect ret is 0 but%v msg:%s:", vtt.Ret, vtt.Msg)
 		} else {
-			fmt.Println("text:", vtt.Data.Text)
+			fmt.Printf("Full: %+v\n", vtt)
+			fmt.Println("Text:", vtt.Data.Text)
 		}
 	}
 }
@@ -29,7 +30,8 @@ func TestVisionImgFileToText(t *testing.T) {
 export QQ_AI_APPID=... QQ_AI_APPKEY=... TZ='Asia/Shanghai'
 
 $ go test
-text: 海面上一艘白色的船.
+Full: {Ret:0 Msg:ok Data:{Text:海面上一艘白色的船.}}
+Text: 海面上一艘白色的船.
 PASS
 ok  	tencentai	2.554s
 
