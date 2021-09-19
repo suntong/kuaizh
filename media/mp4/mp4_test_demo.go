@@ -2,11 +2,14 @@ package main
 
 import (
 	"os"
+	"sync"
 
 	"github.com/tajtiattila/metadata/mp4"
 
 	"github.com/suntong/testing"
 )
+
+var wg sync.WaitGroup // 1
 
 ////////////////////////////////////////////////////////////////////////////
 // Function definitions
@@ -16,8 +19,15 @@ import (
 
 func main() {
 	var t *testing.T = testing.NewT()
-	go TestParse(t)
+	wg.Add(1) // 2
+	go func() {
+		defer wg.Done() // 3
+		TestParse(t)
+	}()
+	print("Main: Waiting for worker to finish\n")
+	wg.Wait() // 4
 	t.Report()
+	print("Done\n")
 }
 
 //==========================================================================
