@@ -16,7 +16,7 @@ import (
 
 func main() {
 	var t *testing.T = testing.NewT()
-	TestParse(t)
+	go TestParse(t)
 	t.Report()
 }
 
