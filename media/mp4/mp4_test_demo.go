@@ -16,8 +16,17 @@ import (
 
 func main() {
 	var t *testing.T = testing.NewT()
-	go TestParse(t)
-	t.Report()
+	finished := make(chan bool)
+
+	go func() {
+		TestParse(t)
+		t.Report()
+		finished <- true
+	}()
+
+	print("Main: Waiting for worker to finish")
+	<-finished
+	print("Done")
 }
 
 //==========================================================================
