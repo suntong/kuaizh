@@ -1,12 +1,28 @@
-package mp4_test
+package main
 
 import (
 	"os"
-	"testing"
 
 	"github.com/tajtiattila/metadata/mp4"
 	"github.com/tajtiattila/metadata/testutil"
+
+	"github.com/suntong/testing"
 )
+
+////////////////////////////////////////////////////////////////////////////
+// Function definitions
+
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+// Function main
+
+func main() {
+	var t *testing.T = testing.NewT()
+	TestParse(t)
+	t.Report()
+}
+
+//==========================================================================
+// test functions
 
 func TestParse(t *testing.T) {
 	fileList := testutil.MediaFileInfos(t)
