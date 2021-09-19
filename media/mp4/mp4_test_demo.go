@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/tajtiattila/metadata/mp4"
-	"github.com/tajtiattila/metadata/testutil"
 
 	"github.com/suntong/testing"
 )
@@ -25,14 +24,14 @@ func main() {
 // test functions
 
 func TestParse(t *testing.T) {
-	fileList := testutil.MediaFileInfos(t)
+	fileList := MediaFileInfos(t)
 
 	for _, e := range fileList {
 		testParse(t, e)
 	}
 }
 
-func testParse(t *testing.T, e testutil.FileInfo) {
+func testParse(t *testing.T, e FileInfo) {
 	if _, ok := e["Error"]; ok {
 		// exiftool found error parsing
 		return
