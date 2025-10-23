@@ -47,12 +47,8 @@ type License struct {
 	URL    string `json:"url"`
 }
 
-// SearchResponse represents the API response structure
-type SearchResponse struct {
-	TotalCount        int          `json:"total_count"`
-	IncompleteResults bool         `json:"incomplete_results"`
-	Items             []Repository `json:"items"`
-}
+// SearchResponse is just a slice of Repositories
+type SearchResponse []Repository
 
 // SearchResult contains all collected repositories and metadata
 type SearchResult struct {
@@ -65,20 +61,27 @@ type SearchResult struct {
 type GitCodeClient struct {
 	BaseURL    string
 	HTTPClient *http.Client
+	Token      string
 }
 
 // NewGitCodeClient creates a new GitCode client with default settings
 func NewGitCodeClient() *GitCodeClient {
+	token := os.Getenv("GITCODE_TOKEN")
+	if token == "" {
+		log.Fatal("GITCODE_TOKEN environment variable not set")
+	}
+
 	return &GitCodeClient{
-		BaseURL: "https://gitcode.com/api/v5",
+		BaseURL: "https://api.gitcode.com/api/v5",
 		HTTPClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
+		Token: token,
 	}
 }
 
 // SearchRepositories searches for repositories matching the query
-// Returns all repositories across the specified number of pages
+// and returns all repositories across the specified number of pages
 func (c *GitCodeClient) SearchRepositories(ctx context.Context, query string, maxPages int) (*SearchResult, error) {
 	if query == "" {
 		return nil, errors.New("query cannot be empty")
@@ -88,7 +91,6 @@ func (c *GitCodeClient) SearchRepositories(ctx context.Context, query string, ma
 	}
 
 	var allRepos []Repository
-	totalCount := 0
 
 	for page := 1; page <= maxPages; page++ {
 		resp, err := c.searchPage(ctx, query, page, 50) // max per_page=50
@@ -102,23 +104,24 @@ func (c *GitCodeClient) SearchRepositories(ctx context.Context, query string, ma
 			break
 		}
 
-		// Update total count from the first page response
-		if page == 1 {
-			totalCount = resp.TotalCount
-		}
-
+		items := len(resp)
 		// If no items returned, we've reached the end
-		if len(resp.Items) == 0 {
+		if items == 0 {
 			break
 		}
 
-		allRepos = append(allRepos, resp.Items...)
+		fmt.Printf(" got %02d entries.\n", items)
+		// Add all repos from this page
+		allRepos = append(allRepos, resp...)
 
-		// Respect rate limiting by adding a small delay between requests
+		// Respect rate limiting
 		if page < maxPages {
 			time.Sleep(100 * time.Millisecond)
 		}
 	}
+
+	// Estimate total count based on how many we retrieved
+	totalCount := len(allRepos)
 
 	return &SearchResult{
 		Query:      query,
@@ -128,7 +131,7 @@ func (c *GitCodeClient) SearchRepositories(ctx context.Context, query string, ma
 }
 
 // searchPage fetches a single page of search results
-func (c *GitCodeClient) searchPage(ctx context.Context, query string, page, perPage int) (*SearchResponse, error) {
+func (c *GitCodeClient) searchPage(ctx context.Context, query string, page, perPage int) (SearchResponse, error) {
 	// Build the request URL
 	u, err := url.Parse(c.BaseURL + "/search/repositories")
 	if err != nil {
@@ -139,6 +142,11 @@ func (c *GitCodeClient) searchPage(ctx context.Context, query string, page, perP
 	q.Set("q", query)
 	q.Set("page", strconv.Itoa(page))
 	q.Set("per_page", strconv.Itoa(perPage))
+	// Add language filter if GITCODE_LANG is set
+	if lang := os.Getenv("GITCODE_LANG"); lang != "" {
+		q.Set("language", lang)
+	}
+	fmt.Printf("Searching with %v...", q)
 	u.RawQuery = q.Encode()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
@@ -146,9 +154,10 @@ func (c *GitCodeClient) searchPage(ctx context.Context, query string, page, perP
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	// Set appropriate headers
+	// Set headers
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", "gitcode-search-client/1.0")
+	req.Header.Set("Authorization", "Bearer "+c.Token)
 
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
@@ -165,12 +174,12 @@ func (c *GitCodeClient) searchPage(ctx context.Context, query string, page, perP
 		return nil, fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
 	}
 
-	var searchResp SearchResponse
-	if err := json.Unmarshal(body, &searchResp); err != nil {
+	var repos []Repository
+	if err := json.Unmarshal(body, &repos); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
-	return &searchResp, nil
+	return repos, nil
 }
 
 // RepositorySummary contains key information about a repository
@@ -281,14 +290,15 @@ func main() {
 		log.Fatalf("Search failed: %v", err)
 	}
 
-	// Output full JSON to stdout (can be redirected to file)
+	// full JSON
 	jsonData, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
 		log.Fatalf("Failed to marshal JSON: %v", err)
 	}
-	fmt.Println(string(jsonData))
+	_ = jsonData
+	//fmt.Println(string(jsonData))
 
-	// Extract and print key information to stderr for better UX
+	// Summaries
 	fmt.Fprintln(os.Stderr, "\n=== KEY REPOSITORY INFORMATION ===")
 	summaries := make([]RepositorySummary, len(result.Items))
 	for i, repo := range result.Items {
@@ -296,7 +306,7 @@ func main() {
 	}
 	PrintSummary(summaries)
 
-	// Print summary statistics to stderr
+	// Statistics
 	fmt.Fprintf(os.Stderr, "\nSearch completed:\n")
 	fmt.Fprintf(os.Stderr, "- Query: %q\n", query)
 	fmt.Fprintf(os.Stderr, "- Total repositories found: %d\n", result.TotalCount)
